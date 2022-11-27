@@ -5,15 +5,8 @@ const app = express();
 
 function middleware1(req, res, next) {
     console.log("Yo!! I am middleware #1");
-
-    const err = new Error("Yo I am error"); // creating an error for the sake of understanding that if there was en error how would it behave.
-    next(err);
-}
-
-function errorHandler(err, req, res, next) {
-    if(err) {
-        console.log("This is an error");
-    }
+    req.customVariable = 100;    
+    next();
 }
 
 app.use(middleware1); // global middleware declaration
@@ -21,19 +14,18 @@ app.use(middleware1); // global middleware declaration
 
 function middleware2(req, res, next) {
     console.log("Yo!! I am middleware #2");
+    console.log(`Custom Variable previos ${req.customVariable}`);
+    req.customVariable = 600;
     next();
 }
 
-
-
 function mainMiddleware(req, res, next) {
     console.log("Yo!! I am Main middleware ");
+    console.log(`Custom Variable after ${req.customVariable}`);
     res.send("<h1>Hello Dosto</h1>");
 }
 
 app.get('/', middleware2, mainMiddleware);
-
-app.use(errorHandler);     // we always place this at last since through entire middlewares calling it should redirect to last where error is handled and do not affect the functionining of other middlewares.
 
 ///////////local middleware declaration///////
 
